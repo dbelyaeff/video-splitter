@@ -1,0 +1,55 @@
+{
+    "name": "dbelyaeff/video-splitter",
+    "description": "This command line app can split any video by given timecodes.k.",
+    "keywords": ["ffmpeg","video", "split","splitter","cli"],
+    "homepage": "",
+    "type": "project",
+    "license": "MIT",
+    "support": {
+        "issues": "https://github.com/dbelayeff/video-splitter/issues",
+        "source": "https://github.com/dbelayeff/video-splitter"
+    },
+    "authors": [
+        {
+            "name": "Dmitriy Belyaev",
+            "email": "admin@cogear.ru"
+        }
+    ],
+    "require": {
+        "php": "^8.1",
+        "laminas/laminas-servicemanager": "^2.6",
+        "laminas/laminas-text": "^2.5",
+        "laravel-zero/framework": "^10.0.2",
+        "midweste/simplelogger": "^2.0",
+        "nunomaduro/termwind": "^1.15.1",
+        "php-ffmpeg/php-ffmpeg": "^1.1"
+    },
+    "require-dev": {
+        "laravel/pint": "^1.8",
+        "mockery/mockery": "^1.5.1",
+        "pestphp/pest": "^2.5"
+    },
+    "autoload": {
+        "psr-4": {
+            "App\\": "app/",
+            "Database\\Factories\\": "database/factories/",
+            "Database\\Seeders\\": "database/seeders/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Tests\\": "tests/"
+        }
+    },
+    "config": {
+        "preferred-install": "dist",
+        "sort-packages": true,
+        "optimize-autoloader": true,
+        "allow-plugins": {
+            "pestphp/pest-plugin": true
+        }
+    },
+    "minimum-stability": "stable",
+    "prefer-stable": true,
+    "bin": ["video-splitter"]
+}
