@@ -4,7 +4,7 @@
     "keywords": ["ffmpeg","video", "split","splitter","cli"],
     "homepage": "https://github.com/dbelyaeff/video-splitter",
     "type": "project",
-    "version": "1.0.1",
+    "version": "1.0.2",
     "license": "MIT",
     "support": {
         "issues": "https://github.com/dbelayeff/video-splitter/issues",
@@ -26,7 +26,6 @@
         "php-ffmpeg/php-ffmpeg": "^1.1"
     },
     "require-dev": {
-        "laravel/pint": "^1.8",
         "mockery/mockery": "^1.5.1",
         "pestphp/pest": "^2.5"
     },
