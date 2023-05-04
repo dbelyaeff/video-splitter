@@ -4,7 +4,7 @@
     "keywords": ["ffmpeg","video", "split","splitter","cli"],
     "homepage": "https://github.com/dbelyaeff/video-splitter",
     "type": "project",
-    "version": "1.0.2",
+    "version": "1.0.3",
     "license": "MIT",
     "support": {
         "issues": "https://github.com/dbelayeff/video-splitter/issues",
