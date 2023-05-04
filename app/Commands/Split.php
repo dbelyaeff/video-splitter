@@ -4,6 +4,7 @@ namespace App\Commands;
 
 use FFMpeg\FFMpeg;
 use FFMpeg\FFProbe;
+use App\Services\Time;
 use Psr\Log\LoggerInterface;
 use FFMpeg\Format\Video\X264;
 use FFMpeg\Coordinate\TimeCode;
@@ -65,34 +66,18 @@ class Split extends Command
         for ($i = 0; $i < count($lines[0]); $i++) {
             preg_match("#(?<timecode>(?:\d{1,2}\:)?\d{1,2}\:\d{1,2})\s+(?<title>.+)#i", $lines[0][$i], $matches);
             $chapters[$i] = [
-                'from' => $this->timeToSeconds($matches['timecode']),
+                'from' => Time::toSeconds($matches['timecode']),
                 'to' => '',
                 'title' => $matches['title']
             ];
             if ($i > 0) {
-                $chapters[$i - 1]["to"] = $this->timeToSeconds($matches['timecode']);
+                $chapters[$i - 1]["to"] = Time::toSeconds($matches['timecode']);
             }
         }
         $this->info("Found " . count($chapters) . " chapters.");
         return $chapters;
     }
-    /**
-     * Perform timecode to seconds transformation
-     *
-     * @param [type] $time
-     * @return void
-     */
-    function timeToSeconds($timecode)
-    {
-        if(preg_match("#\d{1,2}:\d{1,2}:\d{1,2}#i",$timecode)){
-            list($h,$m,$s) = sscanf($timecode,'%d:%d:%d');
-            return $h*3600 + $m*60 + $s;
-       } else if(preg_match("#\d{1,2}:\d{1,2}#i",$timecode)){
-            list($m,$s) = sscanf($timecode,'%d:%d');
-            return $m*60 + $s;
-       }
-       return false;
-    }
+
     /**
      * Splitting video by chapters
      *
@@ -122,15 +107,5 @@ class Split extends Command
             $clip->save($format,$filename);
             $i++;
         }
-    }
-    /**
-     * Define the command's schedule.
-     *
-     * @param  \Illuminate\Console\Scheduling\Schedule  $schedule
-     * @return void
-     */
-    public function schedule(Schedule $schedule): void
-    {
-        // $schedule->command(static::class)->everyMinute();
     }
 }

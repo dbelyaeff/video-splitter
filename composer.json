@@ -2,8 +2,9 @@
     "name": "dbelyaeff/video-splitter",
     "description": "This command line app can split any video by given timecodes.k.",
     "keywords": ["ffmpeg","video", "split","splitter","cli"],
-    "homepage": "",
+    "homepage": "https://github.com/dbelyaeff/video-splitter",
     "type": "project",
+    "version": "1.0.1",
     "license": "MIT",
     "support": {
         "issues": "https://github.com/dbelayeff/video-splitter/issues",
