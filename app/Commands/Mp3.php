@@ -3,6 +3,7 @@
 namespace App\Commands;
 
 use FFMpeg\FFMpeg;
+use FFMpeg\FFProbe;
 use FFMpeg\Format\Video\X264;
 use Midweste\SimpleLogger\EchoLogger;
 use Illuminate\Console\Scheduling\Schedule;
@@ -17,6 +18,7 @@ class Mp3 extends Command
      */
     protected $signature = 'mp3 {video} {output?}
     {--title=}
+    {--description=}
     {--artist=}
     {--album=}
     {--year=}
