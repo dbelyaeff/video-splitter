@@ -10,7 +10,7 @@ class Time
      * @param [type] $time
      * @return void
      */
-    public static function toSeconds($timecode)
+    public static function toSeconds($timecode): int
     {
         if (preg_match("#\d{1,2}:\d{1,2}:\d{1,2}#i", $timecode)) {
             list($h, $m, $s) = sscanf($timecode, '%d:%d:%d');
@@ -19,6 +19,6 @@ class Time
             list($m, $s) = sscanf($timecode, '%d:%d');
             return $m * 60 + $s;
         }
-        return false;
+        return 0;
     }
 }
