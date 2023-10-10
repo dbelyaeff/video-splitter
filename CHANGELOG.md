@@ -1,3 +1,7 @@
+# 1.0.5 (10.10.2023)
+
+* Implements Laravel Prompts
+
 # 1.0.3 (04.04.2023)
 
 * Add `mp3` command to convert video into audio

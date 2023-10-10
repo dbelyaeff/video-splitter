@@ -46,7 +46,7 @@ class Retime extends Command
             $secs = $chapter['start'] % 60;
             $hrs = $chapter['start'] / 3600;
             $mins = $hrs / 60;
-            echo gmdate($chapters[count($chapters)-1]['start'] > 3600 ? "H:i:s" : "i:s",$chapter['start'])." ".$chapter['title']."\n";
+            echo gmdate($chapter['start'] > 3600 ? "G:i:s" : "i:s",$chapter['start'])." ".$chapter['title']."\n";
         }
     }
     /**

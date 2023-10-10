@@ -11,7 +11,9 @@ use FFMpeg\Coordinate\TimeCode;
 use Midweste\SimpleLogger\EchoLogger;
 use Illuminate\Console\Scheduling\Schedule;
 use LaravelZero\Framework\Commands\Command;
-
+use function Laravel\Prompts\suggest;
+use function Laravel\Prompts\text;
+use function Laravel\Prompts\textarea;
 class Split extends Command
 {
     /**
@@ -20,9 +22,9 @@ class Split extends Command
      * @var string
      */
     protected $signature = 'split
-    {video : The video to split (required)}
+    {video? : The video to split (required)}
     {timecodes? : Timecodes either as string or in given file (required) }
-    {suffix? : Optional filename suffix}';
+    {--suffix=}';
 
     /**
      * The description of the command.
@@ -31,6 +33,7 @@ class Split extends Command
      */
     protected $description = 'Splits video by given chapters';
 
+    protected string $suffix;
     /**
      * Execute the console command.
      *
@@ -39,15 +42,19 @@ class Split extends Command
     public function handle()
     {
 
-        $video = $this->argument('video');
+        $video = $this->argument('video') ?? suggest('Choose video:',fn($value) => array_filter(glob("*.mp4"),fn($file)=>str_starts_with($file,$value)));
         abort_unless(file_exists($video), 404, 'File doesn\'t exists.');
-        $timecodes = $this->argument('timecodes');
-        if(null === $timecodes){
-            $timecodes = "timecodes.txt";
-        }
-        if (file_exists($timecodes)) {
-            $timecodes = file_get_contents($timecodes);
-        }
+        $timecodes = $this->argument('timecodes') ?? textarea(
+            label: 'Timecodes',
+            hint: "Provide a list of timecodes in format:\n
+            00:00 Chapter 1
+            NN:NN Chapter N"
+        );
+        $this->suffix = $this->option('suffix') ?? text(
+            label: 'Video suffix',
+            default: env('VIDEO_SPLITTER_DEFAULT_FILENAME_SUFFIX',''),
+            hint: 'Text after filename and before extension.'
+        );
         $chapters = $this->parseTimecodes($timecodes);
         $this->splitVideoByChapters($video, $chapters);
     }
@@ -101,7 +108,7 @@ class Split extends Command
                 $chapter['to'] = $duration;
             }
             $clip = $video->clip(TimeCode::fromSeconds($chapter['from']),TimeCode::fromSeconds($chapter['to']-$chapter['from']));
-            $filename = "{$i}. {$chapter['title']}".( $this->argument('suffix') ?: env('VIDEO_SPLITTER_DEFAULT_FILENAME_SUFFIX','')).".mp4";
+            $filename = "{$i}. {$chapter['title']}{$this->suffix}.mp4";
             $this->info("Writing \"{$filename}\"");
             $format = new X264('copy','copy');
             $clip->save($format,$filename);

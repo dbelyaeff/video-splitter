@@ -9,6 +9,8 @@ use FFMpeg\Format\Video\X264;
 use FFMpeg\Coordinate\TimeCode;
 use Illuminate\Console\Scheduling\Schedule;
 use LaravelZero\Framework\Commands\Command;
+use function Laravel\Prompts\text;
+use function Laravel\Prompts\suggest;
 
 class Cut extends Command
 {
@@ -18,9 +20,9 @@ class Cut extends Command
      * @var string
      */
     protected $signature = 'cut
-    {video : The source video (required)}
-    {from}
-    {to}
+    {video? : The source video (required)}
+    {from?}
+    {to?}
     {output?}
     ';
 
@@ -38,13 +40,39 @@ class Cut extends Command
      */
     public function handle()
     {
-        abort_unless(file_exists($this->argument('video')),404,"Video file not found.");
+        $video_file = $this->argument('video') ?? suggest('Choose video:',fn($value) => array_filter(glob("*.mp4"),fn($file)=>str_starts_with($file,$value)));
+        abort_unless(file_exists($video_file),404,"Video file not found.");
+        $from = $this->argument('from') ?? text(
+            label: 'From:',
+            placeholder: '00:00',
+            default: '00:00',
+            required: true,
+            hint: 'Timecode to cut from.',
+            validate: fn(string $value) => preg_match("#^\d{1,2}\:\d{1,2}$#",$value) === 1 ? null : 'Timecode is incorrect'
+        );
+        $to = $this->argument('to') ?? text(
+            label: 'To:',
+            placeholder: '00:00',
+            default: '00:00',
+            required: true,
+            hint: 'Timecode to cut to.',
+            validate: fn(string $value) => match(true){
+                $from == $value => 'Must be greater that From',
+                default => preg_match("#^\d{1,2}\:\d{1,2}$#",$value) === 1 ? null : 'Timecode is incorrect'
+            }
+        );
+
+        $output = text(
+            label: 'Output filename',
+            required: true,
+            default: $this->argument('output') ?: pathinfo($video_file,PATHINFO_FILENAME)." ({$from}-{$to}).mp4",
+            hint: 'Give a name to the output file.'
+        );
         $ffmpeg = FFMpeg::create();
-        $output = $this->argument('output') ?: time().'.mp4';
-        $video = $ffmpeg->open($this->argument('video'));
-        $this->info("Cutting video ".basename($this->argument('video'))." from {$this->argument('from')} to {$this->argument('to')}…");
-        $clip = $video->clip(TimeCode::fromSeconds(Time::toSeconds($this->argument('from'))),
-            TimeCode::fromSeconds(Time::toSeconds($this->argument('to')) - Time::toSeconds($this->argument('from'))));
+        $video = $ffmpeg->open($video_file);
+        $this->info("Cutting video ".basename($video_file)." from {$from} to {$to}…");
+        $clip = $video->clip(TimeCode::fromSeconds(Time::toSeconds($from)),
+            TimeCode::fromSeconds(Time::toSeconds($to) - Time::toSeconds($from)));
         $clip->save(new X264('copy','copy'),$output);
     }
 
