@@ -8,6 +8,9 @@ use FFMpeg\Coordinate\TimeCode;
 use Illuminate\Console\Scheduling\Schedule;
 use LaravelZero\Framework\Commands\Command;
 
+use function Laravel\Prompts\info;
+use function Laravel\Prompts\textarea;
+use function Laravel\Prompts\note;
 class Retime extends Command
 {
     /**
@@ -15,7 +18,7 @@ class Retime extends Command
      *
      * @var string
      */
-    protected $signature = 'retime {timecodes}';
+    protected $signature = 'retime {timecodes?}';
 
     /**
      * The description of the command.
@@ -31,7 +34,11 @@ class Retime extends Command
      */
     public function handle()
     {
-        $timecodes = $this->argument('timecodes');
+        $timecodes = $this->argument('timecodes') ?? textarea(
+            label: 'Timecodes',
+            hint: 'Paste timecodes to be retimed',
+            required: true
+        );
         $chapters = $this->parseTimecodes($timecodes);
         $this->printChapters($chapters);
     }
@@ -42,12 +49,14 @@ class Retime extends Command
      * @return void
      */
     public function printChapters($chapters){
+        $output = '';
         foreach($chapters as $chapter){
             $secs = $chapter['start'] % 60;
             $hrs = $chapter['start'] / 3600;
             $mins = $hrs / 60;
-            echo gmdate($chapter['start'] > 3600 ? "G:i:s" : "i:s",$chapter['start'])." ".$chapter['title']."\n";
+            $output .= gmdate($chapter['start'] > 3600 ? "G:i:s" : "i:s",$chapter['start'])." ".$chapter['title']."\n";
         }
+        info($output);
     }
     /**
      * Parses raw timecodes text and returns chapters
@@ -71,7 +80,7 @@ class Retime extends Command
                 'title' => $matches['title']
             ];
         }
-        $this->info("Found " . count($chapters) . " chapters.");
+        // $this->info("Found " . count($chapters) . " chapters.");
         return $chapters;
     }
     /**

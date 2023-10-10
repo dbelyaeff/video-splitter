@@ -48,7 +48,8 @@ class Split extends Command
             label: 'Timecodes',
             hint: "Provide a list of timecodes in format:\n
             00:00 Chapter 1
-            NN:NN Chapter N"
+            NN:NN Chapter N",
+            required: true
         );
         $this->suffix = $this->option('suffix') ?? text(
             label: 'Video suffix',
