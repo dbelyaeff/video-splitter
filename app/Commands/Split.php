@@ -68,15 +68,15 @@ class Split extends Command
      */
     public function parseTimecodes($timecodes): array
     {
-        preg_match_all("#^\d{1,2}\:\d{2}[^\n]+$#imsU", $timecodes, $lines);
+        preg_match_all("#^(\d{1,2}\:)?\d{1,2}\:\d{2}[^\n]+$#imsU", $timecodes, $lines);
         abort_unless(count($lines[0]), 500, 'No timecodes has been found');
         $chapters = [];
         for ($i = 0; $i < count($lines[0]); $i++) {
-            preg_match("#(?<timecode>(?:\d{1,2}\:)?\d{1,2}\:\d{1,2})\s+(?<title>.+)#i", $lines[0][$i], $matches);
+            preg_match("#(?<timecode>((?:\d{1,2}\:)?\d{1,2}\:\d{1,2}))\s+(?<title>.+)#i", $lines[0][$i], $matches);
             $chapters[$i] = [
                 'from' => Time::toSeconds($matches['timecode']),
                 'to' => '',
-                'title' => $matches['title']
+                'title' => str_replace([":"],["/"],$matches['title'])
             ];
             if ($i > 0) {
                 $chapters[$i - 1]["to"] = Time::toSeconds($matches['timecode']);
