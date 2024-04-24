@@ -2,6 +2,10 @@
 
 * Implements Laravel Prompts
 
+# 1.0.4 (10.06.2023)
+
+* Add `retime` command to rebase given timecodes from 00:00.
+
 # 1.0.3 (04.04.2023)
 
 * Add `mp3` command to convert video into audio
